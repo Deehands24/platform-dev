@@ -1,0 +1,363 @@
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(180, 180, 200, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(180, 180, 200, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(180, 180, 200, 0);
+  }
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 5px rgba(200, 200, 220, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(200, 200, 220, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(200, 200, 220, 0.5);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Improved animations for dialogs */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.animate-in {
+  animation-duration: 150ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: both;
+}
+
+.fade-in-0 {
+  animation-name: fadeIn;
+}
+
+.zoom-in-95 {
+  animation-name: zoomIn;
+}
+
+/* Grey gradient backdrop with checker pattern */
+.futuristic-background {
+  background-color: hsl(220, 10%, 15%);
+  background-image: linear-gradient(135deg, hsl(220, 10%, 20%), hsl(220, 10%, 10%)),
+    linear-gradient(45deg, hsla(0, 0%, 50%, 0.1) 25%, transparent 25%, transparent 75%, hsla(0, 0%, 50%, 0.1) 75%),
+    linear-gradient(45deg, hsla(0, 0%, 50%, 0.1) 25%, transparent 25%, transparent 75%, hsla(0, 0%, 50%, 0.1) 75%);
+  background-size: 100% 100%, 20px 20px, 20px 20px;
+  background-position: 0 0, 0 0, 10px 10px;
+}
+
+/* Glass card effect */
+.futuristic .glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.futuristic .glass-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 50%,
+    transparent 75%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  background-size: 10px 10px;
+  pointer-events: none;
+}
+
+.futuristic .glass-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: rotate(30deg);
+  transition: all 0.5s ease;
+  opacity: 0;
+}
+
+.futuristic .glass-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.futuristic .glass-card:hover::after {
+  left: 100%;
+  opacity: 0.6;
+  transition: all 0.8s ease;
+}
+
+.futuristic .glass-button {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.futuristic .glass-button::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+  transform: rotate(30deg);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.futuristic .glass-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.futuristic .glass-button:hover::after {
+  opacity: 1;
+}
+
+.futuristic .glass-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.futuristic .glass-input,
+.futuristic .glass-select {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.futuristic .glass-input:focus,
+.futuristic .glass-select:focus {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 2px rgba(200, 200, 220, 0.3), inset 0 2px 5px rgba(0, 0, 0, 0.05);
+  animation: pulse 1.5s infinite;
+  border-color: rgba(100, 150, 255, 0.5);
+  box-shadow: 0 0 0 2px rgba(100, 150, 255, 0.2);
+}
+
+.futuristic .glass-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Improved glass effect for dialogs */
+.futuristic .glass-dialog {
+  background: rgba(30, 30, 40, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+.futuristic .glass-table {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.futuristic .glass-table::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.03) 25%,
+    rgba(255, 255, 255, 0.03) 50%,
+    transparent 50%,
+    transparent 75%,
+    rgba(255, 255, 255, 0.03) 75%
+  );
+  background-size: 8px 8px;
+  pointer-events: none;
+}
+
+.futuristic .glass-table-header {
+  background: rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.futuristic .glass-table-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.futuristic .glass-badge {
+  background: rgba(100, 150, 255, 0.2);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(100, 150, 255, 0.3);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.futuristic .active-item {
+  animation: glow 2s infinite;
+}
+
+.futuristic .floating-card {
+  animation: float 4s ease-in-out infinite;
+}
+
+.futuristic .pop-effect:active {
+  animation: pop 0.3s ease-in-out;
+}
+
+/* Scrollbar styling */
+.futuristic ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.futuristic ::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.futuristic ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.futuristic ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Terminal text effect */
+.futuristic .terminal-text {
+  color: rgba(200, 255, 230, 0.9);
+  text-shadow: 0 0 5px rgba(100, 255, 200, 0.5);
+  font-family: monospace;
+}
+
+/* Grid lines for glass effect */
+.futuristic .grid-lines {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Edge highlight for glass effect */
+.futuristic .edge-highlight {
+  position: relative;
+}
+
+.futuristic .edge-highlight::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+}
+
+/* Dark theme for the futuristic UI */
+.futuristic {
+  --background: 220 10% 10%;
+  --foreground: 0 0% 95%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 3.9%;
+  --primary: 0 0% 9%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 0% 96.1%;
+  --secondary-foreground: 0 0% 9%;
+  --muted: 0 0% 96.1%;
+  --muted-foreground: 0 0% 45.1%;
+  --accent: 0 0% 96.1%;
+  --accent-foreground: 0 0% 9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 89.8%;
+  --input: 0 0% 89.8%;
+  --ring: 0 0% 3.9%;
+  --radius: 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Improved focus styles for accessibility */
+.futuristic :focus-visible {
+  outline: 2px solid rgba(100, 150, 255, 0.5);
+  outline-offset: 2px;
+}
