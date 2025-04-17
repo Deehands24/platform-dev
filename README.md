@@ -83,14 +83,24 @@ This project can be deployed to Vercel with the following steps:
 │   └── page.tsx        # Landing page
 ├── components/         # React components
 │   ├── admin/          # Admin-specific components
-│   ├── ui/             # UI components
-│   └── ...             # Feature components
+│   ├── database/       # Database management components
+│   ├── forms/          # Form building components
+│   ├── layout/         # Layout and global UI components
+│   ├── tables/         # Table management components
+│   └── ui/             # Reusable UI components
+│       └── futuristic/ # Futuristic-themed UI components
 ├── lib/                # Utility functions
 │   ├── db.ts           # Database connection
 │   ├── providers/      # React context providers
 │   ├── services/       # Database services
-│   └── types.ts        # TypeScript types
-└── public/             # Static assets
+│   ├── store.ts        # Global state management 
+│   ├── types.ts        # TypeScript types
+│   └── utils.ts        # Utility functions
+├── public/             # Static assets
+└── styles/             # Global styles
+    ├── globals.css     # Global CSS
+    ├── futuristic.css  # Futuristic theme CSS
+    └── themes/         # Theme configurations
 ```
 
 ## License

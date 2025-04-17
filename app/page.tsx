@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { FuturisticButton } from "@/components/futuristic-button";
-import { FuturisticCard } from "@/components/futuristic-card";
+import { FuturisticButton } from "@/components/ui/futuristic/futuristic-button";
+import { FuturisticCard } from "@/components/ui/futuristic/futuristic-card";
 
 export default function HomePage() {
   return (

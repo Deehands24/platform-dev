@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
-import "./futuristic.css";
+import "@/styles/globals.css";
+import "@/styles/futuristic.css";
 import { AuthProvider } from "@/lib/providers/auth-provider";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/layout/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,10 +32,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-
-import './globals.css'
-
-export const metadata = {
-      generator: 'v0.dev'
-    };

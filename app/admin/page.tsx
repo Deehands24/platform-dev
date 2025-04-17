@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { AdminLoginForm } from "@/components/admin/login-form";
 import { useAuth } from "@/lib/providers/auth-provider";
-import Dashboard from "@/components/dashboard";
+import Dashboard from "@/components/layout/dashboard";
 
 export default function AdminPage() {
   const { isAuthenticated, isLoading } = useAuth();

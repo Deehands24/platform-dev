@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/lib/providers/auth-provider";
-import { FuturisticButton } from "../futuristic-button";
+import { FuturisticButton } from "@/components/ui/futuristic/futuristic-button";
 
 export function AdminLoginForm() {
   const [username, setUsername] = useState("");
