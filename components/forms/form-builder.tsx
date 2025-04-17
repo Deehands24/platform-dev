@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
-import MenuBar from "./menu-bar"
+import { MenuBar } from "@/components/layout/menu-bar"
 import Toolbox from "./toolbox"
 import Canvas from "./canvas"
 import PropertiesPanel from "./properties-panel"
