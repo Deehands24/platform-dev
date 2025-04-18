@@ -7,7 +7,7 @@ import { useStore } from "@/lib/store"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus, X } from "lucide-react"
-import { FuturisticButton } from "@/components/ui/futuristic/futuristic-button"
+import { FuturisticButton } from "./futuristic-button"
 import { FocusTrap } from "@/components/ui/focus-trap"
 
 interface NewDatabaseDialogProps {

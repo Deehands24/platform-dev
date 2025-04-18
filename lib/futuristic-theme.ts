@@ -1,4 +1,4 @@
-import { createTheme } from "./create-theme"
+import { createTheme } from "@/lib/create-theme"
 
 export const futuristicTheme = createTheme({
   name: "futuristic",

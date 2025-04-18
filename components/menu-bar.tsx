@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import type { Form, ComboBoxItemsSource } from "@/lib/types"
-import { ComboBoxItemsSourceDialog } from "@/components/forms/combo-box-items-source-dialog"
+import { ComboBoxItemsSourceDialog } from "./combo-box-items-source-dialog"
 import { useToast } from "@/hooks/use-toast"
 import { Eye, EyeOff } from "lucide-react"
 

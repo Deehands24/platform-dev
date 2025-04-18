@@ -34,6 +34,8 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Plus, Trash2, Edit, Table2, Key, DatabaseIcon } from "lucide-react"
 import DynamicTable from "./dynamic-table"
+// Add the import for DataImportDialog at the top of the file
+import { DataImportDialog } from "./data-import-dialog"
 
 interface TableManagerProps {
   activeDatabase: Database | null
@@ -498,7 +500,9 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
                           </div>
                         ) : (
                           <>
-                            <div className="flex justify-between items-center">
+                            {/* Update the div with the "Add Row" button to include the DataImportDialog */}
+                            {/* Find this section in the code: */}
+                            {/* <div className="flex justify-between items-center">
                               <h3 className="text-lg font-medium">Table Data</h3>
                               <Dialog>
                                 <DialogTrigger asChild>
@@ -506,69 +510,111 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
                                     <Plus className="h-4 w-4 mr-2" />
                                     Add Row
                                   </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                  <DialogHeader>
-                                    <DialogTitle>Add New Row</DialogTitle>
-                                    <DialogDescription>Enter values for each column in the new row.</DialogDescription>
-                                  </DialogHeader>
-                                  <div className="space-y-4 py-4">
-                                    {activeTable.columns.map((column) => (
-                                      <div key={column.columnId} className="space-y-2">
-                                        <label htmlFor={`column-${column.columnId}`} className="text-sm font-medium">
-                                          {column.name} {column.isRequired && <span className="text-red-500">*</span>}
-                                        </label>
-                                        {column.type === ColumnType.Boolean ? (
-                                          <div className="flex items-center space-x-2">
-                                            <Switch
+                                </DialogTrigger> */}
+
+                            {/* Replace it with: */}
+                            <div className="flex justify-between items-center">
+                              <h3 className="text-lg font-medium">Table Data</h3>
+                              <div className="flex gap-2">
+                                <DataImportDialog
+                                  onDataImported={(data, options) => {
+                                    // Add each row from the imported data
+                                    data.forEach((row) => {
+                                      // Convert the flat data structure to the column-based structure
+                                      const rowData: Record<string, any> = {}
+                                      activeTable.columns.forEach((column) => {
+                                        if (row[column.name] !== undefined) {
+                                          rowData[column.columnId] = row[column.name]
+                                        }
+                                      })
+
+                                      // Add the row to the table
+                                      addRow(activeTable.tableId, rowData)
+                                    })
+
+                                    // Update the active table
+                                    const updatedTable = activeDatabase?.tables.find(
+                                      (t) => t.tableId === activeTable.tableId,
+                                    )
+                                    if (updatedTable) {
+                                      onSelectTable(updatedTable)
+                                    }
+                                  }}
+                                  tableColumns={activeTable.columns.map((col) => col.name)}
+                                />
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button size="sm">
+                                      <Plus className="h-4 w-4 mr-2" />
+                                      Add Row
+                                    </Button>
+                                  </DialogTrigger>
+
+                                  <DialogContent>
+                                    <DialogHeader>
+                                      <DialogTitle>Add New Row</DialogTitle>
+                                      <DialogDescription>
+                                        Enter values for each column in the new row.
+                                      </DialogDescription>
+                                    </DialogHeader>
+                                    <div className="space-y-4 py-4">
+                                      {activeTable.columns.map((column) => (
+                                        <div key={column.columnId} className="space-y-2">
+                                          <label htmlFor={`column-${column.columnId}`} className="text-sm font-medium">
+                                            {column.name} {column.isRequired && <span className="text-red-500">*</span>}
+                                          </label>
+                                          {column.type === ColumnType.Boolean ? (
+                                            <div className="flex items-center space-x-2">
+                                              <Switch
+                                                id={`column-${column.columnId}`}
+                                                checked={!!newRowData[column.columnId]}
+                                                onCheckedChange={(checked) =>
+                                                  setNewRowData({ ...newRowData, [column.columnId]: checked })
+                                                }
+                                              />
+                                              <Label htmlFor={`column-${column.columnId}`}>
+                                                {newRowData[column.columnId] ? "Yes" : "No"}
+                                              </Label>
+                                            </div>
+                                          ) : column.type === ColumnType.Date ? (
+                                            <Input
                                               id={`column-${column.columnId}`}
-                                              checked={!!newRowData[column.columnId]}
-                                              onCheckedChange={(checked) =>
-                                                setNewRowData({ ...newRowData, [column.columnId]: checked })
+                                              type="date"
+                                              value={newRowData[column.columnId] || ""}
+                                              onChange={(e) =>
+                                                setNewRowData({ ...newRowData, [column.columnId]: e.target.value })
                                               }
+                                              required={column.isRequired}
                                             />
-                                            <Label htmlFor={`column-${column.columnId}`}>
-                                              {newRowData[column.columnId] ? "Yes" : "No"}
-                                            </Label>
-                                          </div>
-                                        ) : column.type === ColumnType.Date ? (
-                                          <Input
-                                            id={`column-${column.columnId}`}
-                                            type="date"
-                                            value={newRowData[column.columnId] || ""}
-                                            onChange={(e) =>
-                                              setNewRowData({ ...newRowData, [column.columnId]: e.target.value })
-                                            }
-                                            required={column.isRequired}
-                                          />
-                                        ) : column.type === ColumnType.Number ? (
-                                          <Input
-                                            id={`column-${column.columnId}`}
-                                            type="number"
-                                            value={newRowData[column.columnId] || ""}
-                                            onChange={(e) =>
-                                              setNewRowData({ ...newRowData, [column.columnId]: e.target.value })
-                                            }
-                                            required={column.isRequired}
-                                          />
-                                        ) : (
-                                          <Input
-                                            id={`column-${column.columnId}`}
-                                            value={newRowData[column.columnId] || ""}
-                                            onChange={(e) =>
-                                              setNewRowData({ ...newRowData, [column.columnId]: e.target.value })
-                                            }
-                                            required={column.isRequired}
-                                          />
-                                        )}
-                                      </div>
-                                    ))}
-                                  </div>
-                                  <DialogFooter>
-                                    <Button onClick={handleAddRow}>Add Row</Button>
-                                  </DialogFooter>
-                                </DialogContent>
-                              </Dialog>
+                                          ) : column.type === ColumnType.Number ? (
+                                            <Input
+                                              id={`column-${column.columnId}`}
+                                              type="number"
+                                              value={newRowData[column.columnId] || ""}
+                                              onChange={(e) =>
+                                                setNewRowData({ ...newRowData, [column.columnId]: e.target.value })
+                                              }
+                                              required={column.isRequired}
+                                            />
+                                          ) : (
+                                            <Input
+                                              id={`column-${column.columnId}`}
+                                              value={newRowData[column.columnId] || ""}
+                                              onChange={(e) =>
+                                                setNewRowData({ ...newRowData, [column.columnId]: e.target.value })
+                                              }
+                                              required={column.isRequired}
+                                            />
+                                          )}
+                                        </div>
+                                      ))}
+                                    </div>
+                                    <DialogFooter>
+                                      <Button onClick={handleAddRow}>Add Row</Button>
+                                    </DialogFooter>
+                                  </DialogContent>
+                                </Dialog>
+                              </div>
                             </div>
 
                             <DynamicTable

@@ -12,9 +12,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/futuristic/futuristic-card"
-import { FuturisticButton } from "@/components/ui/futuristic/futuristic-button"
+} from "@/components/futuristic-card"
+import { FuturisticButton } from "@/components/futuristic-button"
 import { NewDatabaseDialog } from "./new-database-dialog"
+import { DataImportDialog } from "./data-import-dialog"
 import {
   Dialog,
   DialogContent,
@@ -36,7 +37,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Trash2, Edit, DatabaseIcon } from "lucide-react"
+import { Trash2, Edit, DatabaseIcon, Download, Upload } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 interface DatabaseManagerProps {
   onSelectDatabase: (database: Database | null) => void
@@ -51,6 +53,7 @@ export default function DatabaseManager({ onSelectDatabase, activeDatabase }: Da
   const [jsonInput, setJsonInput] = useState("")
   const [jsonOutput, setJsonOutput] = useState("")
   const [error, setError] = useState("")
+  const { toast } = useToast()
 
   const handleDatabaseCreated = (databaseId: number) => {
     const newDatabase = databases.find((db) => db.databaseId === databaseId)
@@ -84,6 +87,10 @@ export default function DatabaseManager({ onSelectDatabase, activeDatabase }: Da
       setImportDialogOpen(false)
       setJsonInput("")
       setError("")
+      toast({
+        title: "Import successful",
+        description: "Database data has been imported successfully",
+      })
     } else {
       setError("Failed to import data. Please check the JSON format.")
     }
@@ -95,6 +102,17 @@ export default function DatabaseManager({ onSelectDatabase, activeDatabase }: Da
     setExportDialogOpen(true)
   }
 
+  const handleDataImported = (data: any[]) => {
+    // For now, just show the imported data in a toast
+    toast({
+      title: "Data imported",
+      description: `${data.length} records imported successfully`,
+    })
+
+    // In a real implementation, you would add this data to a table
+    console.log("Imported data:", data)
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -103,10 +121,14 @@ export default function DatabaseManager({ onSelectDatabase, activeDatabase }: Da
         </h2>
         <div className="flex gap-2">
           <NewDatabaseDialog onDatabaseCreated={handleDatabaseCreated} />
+          <DataImportDialog onDataImported={handleDataImported} />
 
           <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
             <DialogTrigger asChild>
-              <FuturisticButton variant="outline">Import</FuturisticButton>
+              <FuturisticButton variant="outline">
+                <Upload className="h-4 w-4 mr-2" />
+                Import
+              </FuturisticButton>
             </DialogTrigger>
             <DialogContent className="glass-card max-w-3xl">
               <DialogHeader>
@@ -131,6 +153,7 @@ export default function DatabaseManager({ onSelectDatabase, activeDatabase }: Da
           </Dialog>
 
           <FuturisticButton variant="outline" onClick={handleExport}>
+            <Download className="h-4 w-4 mr-2" />
             Export
           </FuturisticButton>
 
@@ -149,6 +172,10 @@ export default function DatabaseManager({ onSelectDatabase, activeDatabase }: Da
                 <FuturisticButton
                   onClick={() => {
                     navigator.clipboard.writeText(jsonOutput)
+                    toast({
+                      title: "Copied to clipboard",
+                      description: "The JSON data has been copied to your clipboard",
+                    })
                   }}
                 >
                   Copy to Clipboard

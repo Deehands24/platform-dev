@@ -2,11 +2,11 @@
 
 import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { FuturisticCard, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/futuristic/futuristic-card"
-import DatabaseManager from "@/components/database/database-manager"
-import FormBuilder from "@/components/forms/form-builder"
-import TableManager from "@/components/tables/table-manager"
-import RelationshipManager from "@/components/layout/relationship-manager"
+import { FuturisticCard, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/futuristic-card"
+import DatabaseManager from "./database-manager"
+import FormBuilder from "./form-builder"
+import TableManager from "./table-manager"
+import RelationshipManager from "./relationship-manager"
 import type { Database, Table, Form } from "@/lib/types"
 
 export default function Dashboard() {

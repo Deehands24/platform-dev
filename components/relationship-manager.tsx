@@ -5,8 +5,8 @@ import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { useStore } from "@/lib/store"
 import { type Database, type Table, type Relationship, RelationshipType } from "@/lib/types"
-import { FuturisticButton } from "@/components/ui/futuristic/futuristic-button"
-import { FuturisticCard, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/futuristic/futuristic-card"
+import { FuturisticButton } from "@/components/futuristic-button"
+import { FuturisticCard, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/futuristic-card"
 import {
   Dialog,
   DialogContent,

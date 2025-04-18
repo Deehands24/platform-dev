@@ -1,58 +1,26 @@
-import Link from "next/link";
-import { FuturisticButton } from "@/components/ui/futuristic/futuristic-button";
-import { FuturisticCard } from "@/components/ui/futuristic/futuristic-card";
+import Dashboard from "@/components/dashboard"
 
-export default function HomePage() {
+export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-black p-4">
-      <div className="w-full max-w-5xl">
-        <header className="text-center mb-12">
-          <h1 className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-4">
-            Dynamic Database Builder
-          </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Create, manage, and visualize databases with our futuristic interface. 
-            Build tables, forms, and relationships in one place.
-          </p>
-        </header>
+    <main className="min-h-screen py-8 relative">
+      {/* Futuristic background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Grey gradient backdrop */}
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-gray-800 to-gray-900"></div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          <FuturisticCard>
-            <div className="p-6">
-              <h2 className="text-xl font-bold text-gray-100 mb-3">Database Management</h2>
-              <p className="text-gray-300">
-                Create and manage multiple databases with intuitive controls.
-              </p>
-            </div>
-          </FuturisticCard>
+        {/* Subtle light effects */}
+        <div className="absolute top-10 left-10 w-40 h-40 rounded-full bg-gray-500/10 blur-3xl"></div>
+        <div className="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-gray-400/10 blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-gray-600/5 blur-3xl"></div>
 
-          <FuturisticCard>
-            <div className="p-6">
-              <h2 className="text-xl font-bold text-gray-100 mb-3">Table Builder</h2>
-              <p className="text-gray-300">
-                Design database schemas with support for various column types.
-              </p>
-            </div>
-          </FuturisticCard>
+        {/* Grid lines */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(200,200,200,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(200,200,200,0.05)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
 
-          <FuturisticCard>
-            <div className="p-6">
-              <h2 className="text-xl font-bold text-gray-100 mb-3">Relationship Manager</h2>
-              <p className="text-gray-300">
-                Define relationships between tables with visual connections.
-              </p>
-            </div>
-          </FuturisticCard>
-        </div>
-
-        <div className="text-center">
-          <Link href="/admin">
-            <FuturisticButton className="px-8 py-4 text-lg">
-              Launch Dashboard
-            </FuturisticButton>
-          </Link>
-        </div>
+        {/* Checker pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(200,200,200,0.03)_25%,transparent_25%,transparent_75%,rgba(200,200,200,0.03)_75%)] bg-[size:20px_20px]"></div>
       </div>
-    </div>
-  );
+
+      <Dashboard />
+    </main>
+  )
 }
