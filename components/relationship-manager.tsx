@@ -304,6 +304,10 @@ export default function RelationshipManager({ activeDatabase }: RelationshipMana
     })
   }
 
+  const handleNewRelationshipClick = () => {
+    document.getElementById("create-relationship-trigger")?.click()
+  }
+
   return (
     <div className="space-y-4">
       {!activeDatabase ? (
@@ -318,6 +322,9 @@ export default function RelationshipManager({ activeDatabase }: RelationshipMana
             <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-100 to-gray-300">
               Relationships in {activeDatabase.name}
             </h2>
+            <FuturisticButton onClick={handleNewRelationshipClick} className="text-white">
+              <Plus className="mr-1 h-4 w-4" /> Add Relationship
+            </FuturisticButton>
             <Dialog>
               <DialogTrigger asChild>
                 <FuturisticButton id="create-relationship-trigger">

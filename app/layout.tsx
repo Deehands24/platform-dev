@@ -1,6 +1,7 @@
 import type React from "react"
 import "@/app/globals.css"
 import "@/app/futuristic.css"
+import "@/app/futuristic-additions.css" // Add our new CSS
 import { FuturisticThemeProvider } from "@/components/futuristic-theme-provider"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

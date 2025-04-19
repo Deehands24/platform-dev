@@ -104,7 +104,7 @@ export function NewDatabaseDialog({ onDatabaseCreated }: NewDatabaseDialogProps)
           role="dialog"
           aria-modal="true"
           aria-labelledby="dialog-title"
-          className="fixed left-[50%] top-[50%] z-50 w-full max-w-md translate-x-[-50%] translate-y-[-50%] gap-4 border border-gray-700/50 bg-gray-800/90 p-6 shadow-lg duration-200 animate-in fade-in-0 zoom-in-95 sm:rounded-lg glass-card"
+          className="fixed left-[50%] top-[40%] z-50 w-full max-w-md translate-x-[-50%] translate-y-[-50%] gap-4 border border-gray-700/50 bg-gray-800/90 p-6 shadow-lg duration-200 animate-in fade-in-0 zoom-in-95 sm:rounded-lg glass-card"
           style={{ maxHeight: "calc(100vh - 40px)", overflowY: "auto" }}
         >
           <div className="flex flex-col space-y-1.5 text-center sm:text-left">

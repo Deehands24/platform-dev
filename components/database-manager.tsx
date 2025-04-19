@@ -13,9 +13,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/futuristic-card"
-import { FuturisticButton } from "@/components/futuristic-button"
+import { FuturisticButton } from "./futuristic-button"
 import { NewDatabaseDialog } from "./new-database-dialog"
-import { DataImportDialog } from "./data-import-dialog"
 import {
   Dialog,
   DialogContent,
@@ -23,7 +22,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import {
   AlertDialog,
@@ -37,7 +35,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Trash2, Edit, DatabaseIcon, Download, Upload } from "lucide-react"
+import { Trash2, Edit, DatabaseIcon, Download } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 interface DatabaseManagerProps {
@@ -46,13 +44,10 @@ interface DatabaseManagerProps {
 }
 
 export default function DatabaseManager({ onSelectDatabase, activeDatabase }: DatabaseManagerProps) {
-  const { databases, updateDatabase, deleteDatabase, importData, exportData } = useStore()
+  const { databases, updateDatabase, deleteDatabase, exportData } = useStore()
   const [editingDatabase, setEditingDatabase] = useState<Database | null>(null)
-  const [importDialogOpen, setImportDialogOpen] = useState(false)
   const [exportDialogOpen, setExportDialogOpen] = useState(false)
-  const [jsonInput, setJsonInput] = useState("")
   const [jsonOutput, setJsonOutput] = useState("")
-  const [error, setError] = useState("")
   const { toast } = useToast()
 
   const handleDatabaseCreated = (databaseId: number) => {
@@ -76,83 +71,26 @@ export default function DatabaseManager({ onSelectDatabase, activeDatabase }: Da
     }
   }
 
-  const handleImport = () => {
-    if (!jsonInput.trim()) {
-      setError("Please enter valid JSON data")
-      return
-    }
-
-    const success = importData(jsonInput)
-    if (success) {
-      setImportDialogOpen(false)
-      setJsonInput("")
-      setError("")
-      toast({
-        title: "Import successful",
-        description: "Database data has been imported successfully",
-      })
-    } else {
-      setError("Failed to import data. Please check the JSON format.")
-    }
-  }
-
   const handleExport = () => {
     const json = exportData()
     setJsonOutput(json)
     setExportDialogOpen(true)
   }
 
-  const handleDataImported = (data: any[]) => {
-    // For now, just show the imported data in a toast
-    toast({
-      title: "Data imported",
-      description: `${data.length} records imported successfully`,
-    })
-
-    // In a real implementation, you would add this data to a table
-    console.log("Imported data:", data)
-  }
-
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-100 to-gray-300">
+        <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-violet-400">
           Databases
         </h2>
         <div className="flex gap-2">
           <NewDatabaseDialog onDatabaseCreated={handleDatabaseCreated} />
-          <DataImportDialog onDataImported={handleDataImported} />
 
-          <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
-            <DialogTrigger asChild>
-              <FuturisticButton variant="outline">
-                <Upload className="h-4 w-4 mr-2" />
-                Import
-              </FuturisticButton>
-            </DialogTrigger>
-            <DialogContent className="glass-card max-w-3xl">
-              <DialogHeader>
-                <DialogTitle className="text-gray-100">Import Data</DialogTitle>
-                <DialogDescription className="text-gray-300">
-                  Paste your JSON data to import databases, tables, forms, and relationships.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <Textarea
-                  placeholder="Paste your JSON here..."
-                  className="glass-input min-h-[300px] font-mono text-sm"
-                  value={jsonInput}
-                  onChange={(e) => setJsonInput(e.target.value)}
-                />
-                {error && <p className="text-sm text-red-400">{error}</p>}
-              </div>
-              <DialogFooter>
-                <FuturisticButton onClick={handleImport}>Import</FuturisticButton>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-
-          <FuturisticButton variant="outline" onClick={handleExport}>
+          <FuturisticButton
+            variant="outline"
+            onClick={handleExport}
+            className="text-white" // Ensuring white text color for Export button
+          >
             <Download className="h-4 w-4 mr-2" />
             Export
           </FuturisticButton>
@@ -187,7 +125,7 @@ export default function DatabaseManager({ onSelectDatabase, activeDatabase }: Da
       </div>
 
       {databases.length === 0 ? (
-        <div className="text-center py-12 border border-gray-700 rounded-lg backdrop-blur-sm bg-gray-800/20 grid-lines">
+        <div className="text-center py-12 border border-gray-700/30 rounded-lg backdrop-blur-sm bg-gray-800/20 grid-lines">
           <DatabaseIcon className="h-12 w-12 mx-auto text-gray-400" />
           <h3 className="mt-4 text-lg font-medium text-gray-300">No databases yet</h3>
           <p className="mt-1 text-sm text-gray-400">Create your first database to get started.</p>
@@ -198,7 +136,7 @@ export default function DatabaseManager({ onSelectDatabase, activeDatabase }: Da
             {databases.map((database) => (
               <FuturisticCard
                 key={database.databaseId}
-                className={`cursor-pointer ${activeDatabase?.databaseId === database.databaseId ? "active-item" : ""}`}
+                className={`cursor-pointer transition-all ${activeDatabase?.databaseId === database.databaseId ? "active-item scale-102" : ""}`}
                 onClick={() => onSelectDatabase(database)}
                 popEffect
               >

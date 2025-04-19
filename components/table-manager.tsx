@@ -3,10 +3,9 @@
 import { useState, useEffect } from "react"
 import { useStore } from "@/lib/store"
 import { type Database, type Table, type TableColumn, ColumnType } from "@/lib/types"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { FuturisticCard, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/futuristic-card"
 import {
   Dialog,
   DialogContent,
@@ -29,13 +28,13 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Plus, Trash2, Edit, Table2, Key, DatabaseIcon } from "lucide-react"
 import DynamicTable from "./dynamic-table"
-// Add the import for DataImportDialog at the top of the file
 import { DataImportDialog } from "./data-import-dialog"
+import { FuturisticButton } from "./futuristic-button"
+import { ExtendedColumnTypeSelectComponent } from "./extended-column-type-select"
 
 interface TableManagerProps {
   activeDatabase: Database | null
@@ -56,6 +55,7 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
   const [editingColumn, setEditingColumn] = useState<TableColumn | null>(null)
   const [activeTab, setActiveTab] = useState("structure")
   const [newRowData, setNewRowData] = useState<Record<string, any>>({})
+  const [isNewTableDialogOpen, setIsNewTableDialogOpen] = useState(false)
 
   // Reset active table if database changes
   useEffect(() => {
@@ -70,6 +70,7 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
     const newTable = createTable(activeDatabase.databaseId, newTableName, newTableDescription)
     setNewTableName("")
     setNewTableDescription("")
+    setIsNewTableDialogOpen(false)
     onSelectTable(newTable)
   }
 
@@ -192,45 +193,49 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
   return (
     <div className="space-y-4">
       {!activeDatabase ? (
-        <div className="text-center py-12 border-2 border-dashed rounded-lg">
-          <DatabaseIcon className="h-12 w-12 mx-auto text-muted-foreground" />
-          <h3 className="mt-4 text-lg font-medium">No database selected</h3>
-          <p className="mt-1 text-sm text-muted-foreground">Please select a database to manage tables.</p>
+        <div className="text-center py-12 border border-gray-700/30 rounded-lg backdrop-blur-sm bg-gray-800/20">
+          <DatabaseIcon className="h-12 w-12 mx-auto text-gray-400" />
+          <h3 className="mt-4 text-lg font-medium text-gray-300">No database selected</h3>
+          <p className="mt-1 text-sm text-gray-400">Please select a database to manage tables.</p>
         </div>
       ) : (
         <>
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Tables in {activeDatabase.name}</h2>
-            <Dialog>
+            <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-violet-400">
+              Tables in {activeDatabase.name}
+            </h2>
+            <Dialog open={isNewTableDialogOpen} onOpenChange={setIsNewTableDialogOpen}>
               <DialogTrigger asChild>
-                <Button>
+                <FuturisticButton className="text-white" onClick={() => setIsNewTableDialogOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   New Table
-                </Button>
+                </FuturisticButton>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="glass-card">
                 <DialogHeader>
-                  <DialogTitle>Create New Table</DialogTitle>
-                  <DialogDescription>Enter the details for your new table.</DialogDescription>
+                  <DialogTitle className="text-gray-100">Create New Table</DialogTitle>
+                  <DialogDescription className="text-gray-300">Enter the details for your new table.</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                   <div className="space-y-2">
-                    <label htmlFor="table-name" className="text-sm font-medium">
+                    <label htmlFor="table-name" className="text-sm font-medium text-gray-200">
                       Name
                     </label>
                     <Input
                       id="table-name"
+                      className="glass-input"
                       value={newTableName}
                       onChange={(e) => setNewTableName(e.target.value)}
                       placeholder="Table name"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label htmlFor="table-description" className="text-sm font-medium">
+                    <label htmlFor="table-description" className="text-sm font-medium text-gray-200">
                       Description
                     </label>
                     <Textarea
                       id="table-description"
+                      className="glass-input"
                       value={newTableDescription}
                       onChange={(e) => setNewTableDescription(e.target.value)}
                       placeholder="Table description"
@@ -239,7 +244,7 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button onClick={handleCreateTable}>Create Table</Button>
+                  <FuturisticButton onClick={handleCreateTable}>Create Table</FuturisticButton>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -248,15 +253,15 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
             {/* Table List */}
             <div className="lg:col-span-1">
-              <Card className="h-full">
+              <FuturisticCard className="h-full">
                 <CardHeader>
-                  <CardTitle>Tables</CardTitle>
+                  <CardTitle className="text-gray-100">Tables</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ScrollArea className="h-[calc(100vh-350px)]">
                     <div className="space-y-2">
                       {activeDatabase.tables.length === 0 ? (
-                        <div className="text-center py-8 text-muted-foreground">
+                        <div className="text-center py-8 text-gray-400">
                           <p>No tables yet</p>
                           <p className="text-sm">Create your first table to get started</p>
                         </div>
@@ -265,9 +270,7 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
                           <div
                             key={table.tableId}
                             className={`p-3 rounded-md flex justify-between items-center cursor-pointer ${
-                              activeTable?.tableId === table.tableId
-                                ? "bg-primary text-primary-foreground"
-                                : "hover:bg-muted"
+                              activeTable?.tableId === table.tableId ? "bg-white/15 text-white" : "hover:bg-white/10"
                             }`}
                             onClick={() => onSelectTable(table)}
                           >
@@ -276,38 +279,41 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
                               <span>{table.name}</span>
                             </div>
                             <div className="flex gap-1">
-                              <Button
+                              <FuturisticButton
                                 variant="ghost"
                                 size="icon"
-                                className={activeTable?.tableId === table.tableId ? "hover:bg-primary/20" : ""}
+                                className="hover:bg-white/10"
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   setEditingTable({ ...table })
                                 }}
                               >
                                 <Edit className="h-4 w-4" />
-                              </Button>
+                              </FuturisticButton>
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
-                                  <Button
+                                  <FuturisticButton
                                     variant="ghost"
                                     size="icon"
-                                    className={activeTable?.tableId === table.tableId ? "hover:bg-primary/20" : ""}
+                                    className="hover:bg-white/10"
                                     onClick={(e) => e.stopPropagation()}
                                   >
                                     <Trash2 className="h-4 w-4" />
-                                  </Button>
+                                  </FuturisticButton>
                                 </AlertDialogTrigger>
-                                <AlertDialogContent>
+                                <AlertDialogContent className="glass-card">
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                    <AlertDialogDescription>
+                                    <AlertDialogTitle className="text-gray-100">Are you sure?</AlertDialogTitle>
+                                    <AlertDialogDescription className="text-gray-300">
                                       This will permanently delete the table and all its data.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDeleteTable(table.tableId)}>
+                                    <AlertDialogCancel className="glass-button">Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      className="glass-button bg-red-500/20"
+                                      onClick={() => handleDeleteTable(table.tableId)}
+                                    >
                                       Delete
                                     </AlertDialogAction>
                                   </AlertDialogFooter>
@@ -320,82 +326,76 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
                     </div>
                   </ScrollArea>
                 </CardContent>
-              </Card>
+              </FuturisticCard>
             </div>
 
             {/* Table Details */}
             <div className="lg:col-span-3">
               {!activeTable ? (
-                <Card className="h-full flex items-center justify-center">
+                <FuturisticCard className="h-full flex items-center justify-center">
                   <CardContent className="text-center py-12">
-                    <Table2 className="h-12 w-12 mx-auto text-muted-foreground" />
-                    <h3 className="mt-4 text-lg font-medium">No table selected</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      Select a table from the list or create a new one.
-                    </p>
+                    <Table2 className="h-12 w-12 mx-auto text-gray-400" />
+                    <h3 className="mt-4 text-lg font-medium text-gray-300">No table selected</h3>
+                    <p className="mt-1 text-sm text-gray-400">Select a table from the list or create a new one.</p>
                   </CardContent>
-                </Card>
+                </FuturisticCard>
               ) : (
-                <Card>
+                <FuturisticCard>
                   <CardHeader>
-                    <CardTitle>{activeTable.name}</CardTitle>
-                    <CardDescription>{activeTable.description}</CardDescription>
+                    <CardTitle className="text-gray-100">{activeTable.name}</CardTitle>
+                    <CardDescription className="text-gray-300">{activeTable.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <Tabs value={activeTab} onValueChange={setActiveTab}>
-                      <TabsList className="mb-4">
-                        <TabsTrigger value="structure">Structure</TabsTrigger>
-                        <TabsTrigger value="data">Data</TabsTrigger>
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="tabs-list-futuristic">
+                      <TabsList className="mb-4 tabs-list-futuristic">
+                        <TabsTrigger value="structure" className="tab-trigger-futuristic">
+                          Structure
+                        </TabsTrigger>
+                        <TabsTrigger value="data" className="tab-trigger-futuristic">
+                          Data
+                        </TabsTrigger>
                       </TabsList>
 
                       <TabsContent value="structure" className="space-y-4">
                         <div className="flex justify-between items-center">
-                          <h3 className="text-lg font-medium">Columns</h3>
+                          <h3 className="text-lg font-medium text-gray-200">Columns</h3>
                           <Dialog>
                             <DialogTrigger asChild>
-                              <Button size="sm">
+                              <FuturisticButton size="sm">
                                 <Plus className="h-4 w-4 mr-2" />
                                 Add Column
-                              </Button>
+                              </FuturisticButton>
                             </DialogTrigger>
-                            <DialogContent>
+                            <DialogContent className="glass-card">
                               <DialogHeader>
-                                <DialogTitle>Add New Column</DialogTitle>
-                                <DialogDescription>Define the properties for your new column.</DialogDescription>
+                                <DialogTitle className="text-gray-100">Add New Column</DialogTitle>
+                                <DialogDescription className="text-gray-300">
+                                  Define the properties for your new column.
+                                </DialogDescription>
                               </DialogHeader>
                               <div className="space-y-4 py-4">
                                 <div className="space-y-2">
-                                  <label htmlFor="column-name" className="text-sm font-medium">
+                                  <label htmlFor="column-name" className="text-sm font-medium text-gray-200">
                                     Name
                                   </label>
                                   <Input
                                     id="column-name"
+                                    className="glass-input"
                                     value={newColumnName}
                                     onChange={(e) => setNewColumnName(e.target.value)}
                                     placeholder="Column name"
                                   />
                                 </div>
                                 <div className="space-y-2">
-                                  <label htmlFor="column-type" className="text-sm font-medium">
+                                  <label htmlFor="column-type" className="text-sm font-medium text-gray-200">
                                     Type
                                   </label>
-                                  <Select
+                                  <ExtendedColumnTypeSelectComponent
+                                    id="column-type"
+                                    className="glass-input"
                                     value={newColumnType.toString()}
                                     onValueChange={(value) => setNewColumnType(Number(value) as ColumnType)}
-                                  >
-                                    <SelectTrigger id="column-type">
-                                      <SelectValue placeholder="Select column type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value={ColumnType.Text.toString()}>Text</SelectItem>
-                                      <SelectItem value={ColumnType.Number.toString()}>Number</SelectItem>
-                                      <SelectItem value={ColumnType.Boolean.toString()}>Boolean</SelectItem>
-                                      <SelectItem value={ColumnType.Date.toString()}>Date</SelectItem>
-                                      <SelectItem value={ColumnType.Select.toString()}>Select</SelectItem>
-                                      <SelectItem value={ColumnType.Reference.toString()}>Reference</SelectItem>
-                                      <SelectItem value={ColumnType.File.toString()}>File</SelectItem>
-                                    </SelectContent>
-                                  </Select>
+                                  />
                                 </div>
                                 <div className="flex items-center space-x-2">
                                   <Switch
@@ -403,7 +403,9 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
                                     checked={newColumnIsPrimary}
                                     onCheckedChange={setNewColumnIsPrimary}
                                   />
-                                  <Label htmlFor="column-primary">Primary Key</Label>
+                                  <Label htmlFor="column-primary" className="text-gray-200">
+                                    Primary Key
+                                  </Label>
                                 </div>
                                 <div className="flex items-center space-x-2">
                                   <Switch
@@ -411,72 +413,79 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
                                     checked={newColumnIsRequired}
                                     onCheckedChange={setNewColumnIsRequired}
                                   />
-                                  <Label htmlFor="column-required">Required</Label>
+                                  <Label htmlFor="column-required" className="text-gray-200">
+                                    Required
+                                  </Label>
                                 </div>
                               </div>
                               <DialogFooter>
-                                <Button onClick={handleAddColumn}>Add Column</Button>
+                                <FuturisticButton onClick={handleAddColumn}>Add Column</FuturisticButton>
                               </DialogFooter>
                             </DialogContent>
                           </Dialog>
                         </div>
 
                         {activeTable.columns.length === 0 ? (
-                          <div className="text-center py-8 border-2 border-dashed rounded-md">
-                            <p className="text-muted-foreground">No columns defined yet</p>
-                            <p className="text-sm text-muted-foreground">Add columns to define your table structure</p>
+                          <div className="text-center py-8 border border-gray-700/30 rounded-md backdrop-blur-sm bg-gray-800/20">
+                            <p className="text-gray-300">No columns defined yet</p>
+                            <p className="text-sm text-gray-400">Add columns to define your table structure</p>
                           </div>
                         ) : (
-                          <div className="border rounded-md">
+                          <div className="border border-gray-700/30 rounded-md glass-table">
                             <table className="w-full">
                               <thead>
-                                <tr className="border-b">
-                                  <th className="px-4 py-2 text-left">Name</th>
-                                  <th className="px-4 py-2 text-left">Type</th>
-                                  <th className="px-4 py-2 text-left">Attributes</th>
-                                  <th className="px-4 py-2 text-right">Actions</th>
+                                <tr className="border-b border-gray-700/30">
+                                  <th className="px-4 py-2 text-left text-gray-200">Name</th>
+                                  <th className="px-4 py-2 text-left text-gray-200">Type</th>
+                                  <th className="px-4 py-2 text-left text-gray-200">Attributes</th>
+                                  <th className="px-4 py-2 text-right text-gray-200">Actions</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {activeTable.columns.map((column) => (
-                                  <tr key={column.columnId} className="border-b">
-                                    <td className="px-4 py-2">
+                                  <tr key={column.columnId} className="border-b border-gray-700/30">
+                                    <td className="px-4 py-2 text-gray-300">
                                       <div className="flex items-center">
                                         {column.isPrimaryKey && <Key className="h-3 w-3 mr-2 text-amber-500" />}
                                         {column.name}
                                       </div>
                                     </td>
-                                    <td className="px-4 py-2">{getColumnTypeName(column.type)}</td>
-                                    <td className="px-4 py-2">
+                                    <td className="px-4 py-2 text-gray-300">{getColumnTypeName(column.type)}</td>
+                                    <td className="px-4 py-2 text-gray-300">
                                       {column.isRequired && (
-                                        <span className="text-xs bg-muted px-2 py-1 rounded">Required</span>
+                                        <span className="text-xs bg-gray-700/50 px-2 py-1 rounded">Required</span>
                                       )}
                                     </td>
                                     <td className="px-4 py-2 text-right">
                                       <div className="flex justify-end gap-1">
-                                        <Button
+                                        <FuturisticButton
                                           variant="ghost"
                                           size="icon"
                                           onClick={() => setEditingColumn({ ...column })}
                                         >
                                           <Edit className="h-4 w-4" />
-                                        </Button>
+                                        </FuturisticButton>
                                         <AlertDialog>
                                           <AlertDialogTrigger asChild>
-                                            <Button variant="ghost" size="icon">
+                                            <FuturisticButton variant="ghost" size="icon">
                                               <Trash2 className="h-4 w-4" />
-                                            </Button>
+                                            </FuturisticButton>
                                           </AlertDialogTrigger>
-                                          <AlertDialogContent>
+                                          <AlertDialogContent className="glass-card">
                                             <AlertDialogHeader>
-                                              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                              <AlertDialogDescription>
+                                              <AlertDialogTitle className="text-gray-100">
+                                                Are you sure?
+                                              </AlertDialogTitle>
+                                              <AlertDialogDescription className="text-gray-300">
                                                 This will permanently delete the column and all its data.
                                               </AlertDialogDescription>
                                             </AlertDialogHeader>
                                             <AlertDialogFooter>
-                                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                              <AlertDialogAction onClick={() => handleDeleteColumn(column.columnId)}>
+                                              <AlertDialogCancel className="glass-button">Cancel</AlertDialogCancel>
+                                              <AlertDialogAction
+                                                className="glass-button bg-red-500/20"
+                                                onClick={() => handleDeleteColumn(column.columnId)}
+                                              >
                                                 Delete
                                               </AlertDialogAction>
                                             </AlertDialogFooter>
@@ -494,27 +503,14 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
 
                       <TabsContent value="data" className="space-y-4">
                         {activeTable.columns.length === 0 ? (
-                          <div className="text-center py-8 border-2 border-dashed rounded-md">
-                            <p className="text-muted-foreground">No columns defined yet</p>
-                            <p className="text-sm text-muted-foreground">Add columns in the Structure tab first</p>
+                          <div className="text-center py-8 border border-gray-700/30 rounded-md backdrop-blur-sm bg-gray-800/20">
+                            <p className="text-gray-300">No columns defined yet</p>
+                            <p className="text-sm text-gray-400">Add columns in the Structure tab first</p>
                           </div>
                         ) : (
                           <>
-                            {/* Update the div with the "Add Row" button to include the DataImportDialog */}
-                            {/* Find this section in the code: */}
-                            {/* <div className="flex justify-between items-center">
-                              <h3 className="text-lg font-medium">Table Data</h3>
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Button size="sm">
-                                    <Plus className="h-4 w-4 mr-2" />
-                                    Add Row
-                                  </Button>
-                                </DialogTrigger> */}
-
-                            {/* Replace it with: */}
                             <div className="flex justify-between items-center">
-                              <h3 className="text-lg font-medium">Table Data</h3>
+                              <h3 className="text-lg font-medium text-gray-200">Table Data</h3>
                               <div className="flex gap-2">
                                 <DataImportDialog
                                   onDataImported={(data, options) => {
@@ -544,23 +540,26 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
                                 />
                                 <Dialog>
                                   <DialogTrigger asChild>
-                                    <Button size="sm">
+                                    <FuturisticButton size="sm">
                                       <Plus className="h-4 w-4 mr-2" />
                                       Add Row
-                                    </Button>
+                                    </FuturisticButton>
                                   </DialogTrigger>
 
-                                  <DialogContent>
+                                  <DialogContent className="glass-card">
                                     <DialogHeader>
-                                      <DialogTitle>Add New Row</DialogTitle>
-                                      <DialogDescription>
+                                      <DialogTitle className="text-gray-100">Add New Row</DialogTitle>
+                                      <DialogDescription className="text-gray-300">
                                         Enter values for each column in the new row.
                                       </DialogDescription>
                                     </DialogHeader>
                                     <div className="space-y-4 py-4">
                                       {activeTable.columns.map((column) => (
                                         <div key={column.columnId} className="space-y-2">
-                                          <label htmlFor={`column-${column.columnId}`} className="text-sm font-medium">
+                                          <label
+                                            htmlFor={`column-${column.columnId}`}
+                                            className="text-sm font-medium text-gray-200"
+                                          >
                                             {column.name} {column.isRequired && <span className="text-red-500">*</span>}
                                           </label>
                                           {column.type === ColumnType.Boolean ? (
@@ -572,13 +571,14 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
                                                   setNewRowData({ ...newRowData, [column.columnId]: checked })
                                                 }
                                               />
-                                              <Label htmlFor={`column-${column.columnId}`}>
+                                              <Label htmlFor={`column-${column.columnId}`} className="text-gray-200">
                                                 {newRowData[column.columnId] ? "Yes" : "No"}
                                               </Label>
                                             </div>
                                           ) : column.type === ColumnType.Date ? (
                                             <Input
                                               id={`column-${column.columnId}`}
+                                              className="glass-input"
                                               type="date"
                                               value={newRowData[column.columnId] || ""}
                                               onChange={(e) =>
@@ -589,6 +589,7 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
                                           ) : column.type === ColumnType.Number ? (
                                             <Input
                                               id={`column-${column.columnId}`}
+                                              className="glass-input"
                                               type="number"
                                               value={newRowData[column.columnId] || ""}
                                               onChange={(e) =>
@@ -599,6 +600,7 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
                                           ) : (
                                             <Input
                                               id={`column-${column.columnId}`}
+                                              className="glass-input"
                                               value={newRowData[column.columnId] || ""}
                                               onChange={(e) =>
                                                 setNewRowData({ ...newRowData, [column.columnId]: e.target.value })
@@ -610,7 +612,7 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
                                       ))}
                                     </div>
                                     <DialogFooter>
-                                      <Button onClick={handleAddRow}>Add Row</Button>
+                                      <FuturisticButton onClick={handleAddRow}>Add Row</FuturisticButton>
                                     </DialogFooter>
                                   </DialogContent>
                                 </Dialog>
@@ -629,7 +631,7 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
                       </TabsContent>
                     </Tabs>
                   </CardContent>
-                </Card>
+                </FuturisticCard>
               )}
             </div>
           </div>
@@ -638,30 +640,32 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
 
       {/* Edit Table Dialog */}
       <Dialog open={!!editingTable} onOpenChange={(open) => !open && setEditingTable(null)}>
-        <DialogContent>
+        <DialogContent className="glass-card">
           <DialogHeader>
-            <DialogTitle>Edit Table</DialogTitle>
-            <DialogDescription>Update the details for your table.</DialogDescription>
+            <DialogTitle className="text-gray-100">Edit Table</DialogTitle>
+            <DialogDescription className="text-gray-300">Update the details for your table.</DialogDescription>
           </DialogHeader>
           {editingTable && (
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <label htmlFor="edit-table-name" className="text-sm font-medium">
+                <label htmlFor="edit-table-name" className="text-sm font-medium text-gray-200">
                   Name
                 </label>
                 <Input
                   id="edit-table-name"
+                  className="glass-input"
                   value={editingTable.name}
                   onChange={(e) => setEditingTable({ ...editingTable, name: e.target.value })}
                   placeholder="Table name"
                 />
               </div>
               <div className="space-y-2">
-                <label htmlFor="edit-table-description" className="text-sm font-medium">
+                <label htmlFor="edit-table-description" className="text-sm font-medium text-gray-200">
                   Description
                 </label>
                 <Textarea
                   id="edit-table-description"
+                  className="glass-input"
                   value={editingTable.description}
                   onChange={(e) => setEditingTable({ ...editingTable, description: e.target.value })}
                   placeholder="Table description"
@@ -671,52 +675,42 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
             </div>
           )}
           <DialogFooter>
-            <Button onClick={handleUpdateTable}>Update Table</Button>
+            <FuturisticButton onClick={handleUpdateTable}>Update Table</FuturisticButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Edit Column Dialog */}
       <Dialog open={!!editingColumn} onOpenChange={(open) => !open && setEditingColumn(null)}>
-        <DialogContent>
+        <DialogContent className="glass-card">
           <DialogHeader>
-            <DialogTitle>Edit Column</DialogTitle>
-            <DialogDescription>Update the properties for your column.</DialogDescription>
+            <DialogTitle className="text-gray-100">Edit Column</DialogTitle>
+            <DialogDescription className="text-gray-300">Update the properties for your column.</DialogDescription>
           </DialogHeader>
           {editingColumn && (
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <label htmlFor="edit-column-name" className="text-sm font-medium">
+                <label htmlFor="edit-column-name" className="text-sm font-medium text-gray-200">
                   Name
                 </label>
                 <Input
                   id="edit-column-name"
+                  className="glass-input"
                   value={editingColumn.name}
                   onChange={(e) => setEditingColumn({ ...editingColumn, name: e.target.value })}
                   placeholder="Column name"
                 />
               </div>
               <div className="space-y-2">
-                <label htmlFor="edit-column-type" className="text-sm font-medium">
+                <label htmlFor="edit-column-type" className="text-sm font-medium text-gray-200">
                   Type
                 </label>
-                <Select
+                <ExtendedColumnTypeSelectComponent
+                  id="edit-column-type"
+                  className="glass-input"
                   value={editingColumn.type.toString()}
                   onValueChange={(value) => setEditingColumn({ ...editingColumn, type: Number(value) as ColumnType })}
-                >
-                  <SelectTrigger id="edit-column-type">
-                    <SelectValue placeholder="Select column type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={ColumnType.Text.toString()}>Text</SelectItem>
-                    <SelectItem value={ColumnType.Number.toString()}>Number</SelectItem>
-                    <SelectItem value={ColumnType.Boolean.toString()}>Boolean</SelectItem>
-                    <SelectItem value={ColumnType.Date.toString()}>Date</SelectItem>
-                    <SelectItem value={ColumnType.Select.toString()}>Select</SelectItem>
-                    <SelectItem value={ColumnType.Reference.toString()}>Reference</SelectItem>
-                    <SelectItem value={ColumnType.File.toString()}>File</SelectItem>
-                  </SelectContent>
-                </Select>
+                />
               </div>
               <div className="flex items-center space-x-2">
                 <Switch
@@ -724,7 +718,9 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
                   checked={editingColumn.isPrimaryKey}
                   onCheckedChange={(checked) => setEditingColumn({ ...editingColumn, isPrimaryKey: checked })}
                 />
-                <Label htmlFor="edit-column-primary">Primary Key</Label>
+                <Label htmlFor="edit-column-primary" className="text-gray-200">
+                  Primary Key
+                </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Switch
@@ -732,12 +728,14 @@ export default function TableManager({ activeDatabase, onSelectTable, activeTabl
                   checked={editingColumn.isRequired}
                   onCheckedChange={(checked) => setEditingColumn({ ...editingColumn, isRequired: checked })}
                 />
-                <Label htmlFor="edit-column-required">Required</Label>
+                <Label htmlFor="edit-column-required" className="text-gray-200">
+                  Required
+                </Label>
               </div>
             </div>
           )}
           <DialogFooter>
-            <Button onClick={handleUpdateColumn}>Update Column</Button>
+            <FuturisticButton onClick={handleUpdateColumn}>Update Column</FuturisticButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>
