@@ -75,9 +75,10 @@ export const useStore = create<StoreState>()(
       comboBoxItemsSources: [],
 
       // Database operations
-      createDatabase: (name, description) => {
+      createDatabase: (name: string, description: string) => {
+        const tempId = Date.now();
         const newDatabase: Database = {
-          databaseId: Date.now(),
+          databaseId: tempId,
           name,
           description,
           createdDate: new Date(),
@@ -85,13 +86,45 @@ export const useStore = create<StoreState>()(
           tables: [],
           forms: [],
           relationships: [],
-        }
+        };
 
         set((state) => ({
           databases: [...state.databases, newDatabase],
-        }))
+        }));
 
-        return newDatabase
+        // Call the API to create the database in Neon
+        fetch('/api/db/create-database', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name, description }),
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to create database in Neon');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Update local state with the actual database ID from Neon
+          set((state) => ({
+            databases: state.databases.map(db => 
+              db.databaseId === tempId 
+                ? { ...db, databaseId: parseInt(data.database.id) } 
+                : db
+            ),
+          }));
+        })
+        .catch(error => {
+          console.error('Error creating database:', error);
+          // Remove the database from local state if API call fails
+          set((state) => ({
+            databases: state.databases.filter(db => db.databaseId !== tempId),
+          }));
+        });
+
+        return newDatabase;
       },
 
       updateDatabase: (database) => {
@@ -109,7 +142,7 @@ export const useStore = create<StoreState>()(
       },
 
       // Table operations
-      createTable: (databaseId, name, description) => {
+      createTable: (databaseId: number, name: string, description: string) => {
         const newTable: Table = {
           tableId: Date.now(),
           databaseId,
@@ -119,7 +152,7 @@ export const useStore = create<StoreState>()(
           updatedDate: new Date(),
           columns: [],
           rows: [],
-        }
+        };
 
         set((state) => ({
           databases: state.databases.map((db) => {
@@ -128,13 +161,61 @@ export const useStore = create<StoreState>()(
                 ...db,
                 tables: [...db.tables, newTable],
                 updatedDate: new Date(),
-              }
+              };
             }
-            return db
+            return db;
           }),
-        }))
+        }));
 
-        return newTable
+        // Call the API to create the table in Neon
+        fetch('/api/db/create-table', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ databaseId, name, description }),
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to create table in Neon');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Update local state with the table ID from Neon
+          set((state) => ({
+            databases: state.databases.map(db => {
+              if (db.databaseId === databaseId) {
+                return {
+                  ...db,
+                  tables: db.tables.map(t => 
+                    t.tableId === newTable.tableId 
+                      ? { ...t, tableId: data.table.id } 
+                      : t
+                  ),
+                };
+              }
+              return db;
+            }),
+          }));
+        })
+        .catch(error => {
+          console.error('Error creating table:', error);
+          // Optionally, remove the table from local state if API call fails
+          set((state) => ({
+            databases: state.databases.map(db => {
+              if (db.databaseId === databaseId) {
+                return {
+                  ...db,
+                  tables: db.tables.filter(t => t.tableId !== newTable.tableId),
+                };
+              }
+              return db;
+            }),
+          }));
+        });
+
+        return newTable;
       },
 
       updateTable: (table) => {
@@ -168,7 +249,7 @@ export const useStore = create<StoreState>()(
       },
 
       // Column operations
-      addColumn: (tableId, columnData) => {
+      addColumn: (tableId: number, columnData: Partial<TableColumn>) => {
         const newColumn: TableColumn = {
           columnId: Date.now(),
           tableId,
@@ -178,7 +259,7 @@ export const useStore = create<StoreState>()(
           isRequired: columnData.isRequired || false,
           defaultValue: columnData.defaultValue,
           validationRules: columnData.validationRules || [],
-        }
+        };
 
         set((state) => ({
           databases: state.databases.map((db) => {
@@ -190,16 +271,82 @@ export const useStore = create<StoreState>()(
                     ...table,
                     columns: [...table.columns, newColumn],
                     updatedDate: new Date(),
-                  }
+                  };
                 }
-                return table
+                return table;
               }),
               updatedDate: new Date(),
-            }
+            };
           }),
-        }))
+        }));
 
-        return newColumn
+        // Call the API to create the column in Neon
+        fetch('/api/db/create-column', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            tableId,
+            name: newColumn.name,
+            type: newColumn.type,
+            isPrimaryKey: newColumn.isPrimaryKey,
+            isRequired: newColumn.isRequired,
+            defaultValue: newColumn.defaultValue,
+            validationRules: newColumn.validationRules,
+          }),
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to create column in Neon');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Update local state with the column ID from Neon
+          set((state) => ({
+            databases: state.databases.map(db => {
+              return {
+                ...db,
+                tables: db.tables.map(table => {
+                  if (table.tableId === tableId) {
+                    return {
+                      ...table,
+                      columns: table.columns.map(c => 
+                        c.columnId === newColumn.columnId 
+                          ? { ...c, columnId: data.column.id } 
+                          : c
+                      ),
+                    };
+                  }
+                  return table;
+                }),
+              };
+            }),
+          }));
+        })
+        .catch(error => {
+          console.error('Error creating column:', error);
+          // Optionally, remove the column from local state if API call fails
+          set((state) => ({
+            databases: state.databases.map(db => {
+              return {
+                ...db,
+                tables: db.tables.map(table => {
+                  if (table.tableId === tableId) {
+                    return {
+                      ...table,
+                      columns: table.columns.filter(c => c.columnId !== newColumn.columnId),
+                    };
+                  }
+                  return table;
+                }),
+              };
+            }),
+          }));
+        });
+
+        return newColumn;
       },
 
       updateColumn: (column) => {
@@ -317,7 +464,7 @@ export const useStore = create<StoreState>()(
       },
 
       // Form operations
-      createForm: (databaseId, name, description) => {
+      createForm: (databaseId: number, name: string, description: string) => {
         const newForm: Form = {
           formId: Date.now(),
           databaseId,
@@ -329,7 +476,7 @@ export const useStore = create<StoreState>()(
           elements: [],
           interactionRules: [],
           tableLinks: [],
-        }
+        };
 
         set((state) => ({
           databases: state.databases.map((db) => {
@@ -338,13 +485,61 @@ export const useStore = create<StoreState>()(
                 ...db,
                 forms: [...db.forms, newForm],
                 updatedDate: new Date(),
-              }
+              };
             }
-            return db
+            return db;
           }),
-        }))
+        }));
 
-        return newForm
+        // Call the API to create the form in Neon
+        fetch('/api/db/create-form', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ databaseId, name, description, isActive: true }),
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to create form in Neon');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Update local state with the form ID from Neon
+          set((state) => ({
+            databases: state.databases.map(db => {
+              if (db.databaseId === databaseId) {
+                return {
+                  ...db,
+                  forms: db.forms.map(f => 
+                    f.formId === newForm.formId 
+                      ? { ...f, formId: data.form.id } 
+                      : f
+                  ),
+                };
+              }
+              return db;
+            }),
+          }));
+        })
+        .catch(error => {
+          console.error('Error creating form:', error);
+          // Optionally, remove the form from local state if API call fails
+          set((state) => ({
+            databases: state.databases.map(db => {
+              if (db.databaseId === databaseId) {
+                return {
+                  ...db,
+                  forms: db.forms.filter(f => f.formId !== newForm.formId),
+                };
+              }
+              return db;
+            }),
+          }));
+        });
+
+        return newForm;
       },
 
       updateForm: (form) => {
@@ -378,7 +573,7 @@ export const useStore = create<StoreState>()(
       },
 
       // Form element operations
-      addFormElement: (formId, elementData) => {
+      addFormElement: (formId: number, elementData: Partial<FormElement>) => {
         const newElement: FormElement = {
           elementId: Date.now(),
           formId,
@@ -392,7 +587,7 @@ export const useStore = create<StoreState>()(
           isEnabled: elementData.isEnabled !== undefined ? elementData.isEnabled : true,
           validationRules: elementData.validationRules || [],
           tableLink: elementData.tableLink,
-        }
+        };
 
         set((state) => ({
           databases: state.databases.map((db) => {
@@ -404,16 +599,85 @@ export const useStore = create<StoreState>()(
                     ...form,
                     elements: [...form.elements, newElement],
                     updatedDate: new Date(),
-                  }
+                  };
                 }
-                return form
+                return form;
               }),
               updatedDate: new Date(),
-            }
+            };
           }),
-        }))
+        }));
 
-        return newElement
+        // Call the API to create the form element in Neon
+        fetch('/api/db/create-form-element', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            formId,
+            label: newElement.label,
+            placeholder: newElement.placeholder,
+            defaultValue: newElement.defaultValue,
+            order: newElement.order,
+            type: newElement.type,
+            isRequired: newElement.isRequired,
+            isVisible: newElement.isVisible,
+            isEnabled: newElement.isEnabled,
+            validationRules: newElement.validationRules,
+          }),
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to create form element in Neon');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Update local state with the element ID from Neon
+          set((state) => ({
+            databases: state.databases.map(db => {
+              return {
+                ...db,
+                forms: db.forms.map(form => {
+                  if (form.formId === formId) {
+                    return {
+                      ...form,
+                      elements: form.elements.map(e => 
+                        e.elementId === newElement.elementId 
+                          ? { ...e, elementId: data.formElement.id } 
+                          : e
+                      ),
+                    };
+                  }
+                  return form;
+                }),
+              };
+            }),
+          }));
+        })
+        .catch(error => {
+          console.error('Error creating form element:', error);
+          // Optionally, remove the element from local state if API call fails
+          set((state) => ({
+            databases: state.databases.map(db => {
+              return {
+                ...db,
+                forms: db.forms.map(form => {
+                  if (form.formId === formId) {
+                    return {
+                      ...form,
+                      elements: form.elements.filter(e => e.elementId !== newElement.elementId),
+                    };
+                  }
+                  return form;
+                }),
+              };
+            }),
+          }));
+        });
+
+        return newElement;
       },
 
       updateFormElement: (element) => {
