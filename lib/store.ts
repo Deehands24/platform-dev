@@ -230,7 +230,29 @@ export const useStore = create<StoreState>()(
             }
             return db
           }),
-        }))
+        }));
+
+        // Call the API to update the table in Neon
+        fetch('/api/db/update-table', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            tableId: table.tableId,
+            name: table.name,
+            description: table.description,
+          }),
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to update table in Neon');
+          }
+          return response.json();
+        })
+        .catch(error => {
+          console.error('Error updating table:', error);
+        });
       },
 
       deleteTable: (databaseId, tableId) => {
@@ -245,7 +267,27 @@ export const useStore = create<StoreState>()(
             }
             return db
           }),
-        }))
+        }));
+
+        // Call the API to delete the table from Neon
+        fetch('/api/db/delete-table', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            tableId,
+          }),
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to delete table from Neon');
+          }
+          return response.json();
+        })
+        .catch(error => {
+          console.error('Error deleting table:', error);
+        });
       },
 
       // Column operations
